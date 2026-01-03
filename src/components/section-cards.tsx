@@ -5,101 +5,49 @@ import {
   IconTrendingDown,
   IconTrendingUp,
 } from "@tabler/icons-react";
-import { useEffect, useRef, useState } from "react";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status";
 
 type MotorState = "Running" | "Stopped" | "Error";
 
-export function SectionCards() {
-  const [motorState, setMotorState] = useState<MotorState>("Stopped");
-  const [frequency, setFrequency] = useState("30.55");
-  const [startTime, setStartTime] = useState<Date | null>(null);
-  const [uptimeMinutes, setUptimeMinutes] = useState(0);
+interface SectionCardsProps {
+  motorState: MotorState;
+  frequency: string;
+  setFrequency: (value: string) => void;
+  startTime: Date | null;
+  uptimeMinutes: number;
+  onStart: () => void;
+  onStop: () => void;
+  onIncrement: () => void;
+  onDecrement: () => void;
+  onIncrementMouseDown: () => void;
+  onDecrementMouseDown: () => void;
+  onMouseUp: () => void;
+}
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout | undefined;
-    if (motorState === "Running") {
-      intervalId = setInterval(() => {
-        if (startTime) {
-          const diff = new Date().getTime() - startTime.getTime();
-          setUptimeMinutes(Math.floor(diff / (1000 * 60)));
-        }
-      }, 1000);
-    }
-    return () => clearInterval(intervalId);
-  }, [motorState, startTime]);
-
-  const handleStart = () => {
-    setMotorState("Running");
-    setStartTime(new Date());
-  };
-
-  const handleStop = () => {
-    setMotorState("Stopped");
-    setStartTime(null);
-    setUptimeMinutes(0);
-  };
-
-  const handleIncrement = () => {
-    setFrequency((prev) => {
-      let currentFreq = parseFloat(prev);
-      if (isNaN(currentFreq)) currentFreq = 0;
-      let newFreq = currentFreq + 0.01;
-      if (newFreq > 60) newFreq = 60;
-      return newFreq.toFixed(2);
-    });
-  };
-
-  const handleDecrement = () => {
-    setFrequency((prev) => {
-      let currentFreq = parseFloat(prev);
-      if (isNaN(currentFreq)) currentFreq = 0;
-      let newFreq = currentFreq - 0.01;
-      if (newFreq < 0) newFreq = 0;
-      return newFreq.toFixed(2);
-    });
-  };
-
-  const handleIncrementMouseDown = () => {
-    timeoutRef.current = setTimeout(() => {
-      intervalRef.current = setInterval(handleIncrement, 75);
-    }, 300);
-  };
-
-  const handleDecrementMouseDown = () => {
-    timeoutRef.current = setTimeout(() => {
-      intervalRef.current = setInterval(handleDecrement, 75);
-    }, 300);
-  };
-
-  const handleMouseUp = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
+export function SectionCards({
+  motorState,
+  frequency,
+  setFrequency,
+  startTime,
+  uptimeMinutes,
+  onStart,
+  onStop,
+  onIncrement,
+  onDecrement,
+  onIncrementMouseDown,
+  onDecrementMouseDown,
+  onMouseUp,
+}: SectionCardsProps) {
   const getStatusVariant = (state: MotorState) => {
     switch (state) {
       case "Running":
@@ -112,6 +60,7 @@ export function SectionCards() {
         return "default";
     }
   };
+
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
@@ -145,14 +94,14 @@ export function SectionCards() {
             <div className="flex gap-2">
               <Button
                 size="sm"
-                onClick={handleStart}
+                onClick={onStart}
                 disabled={motorState === "Running"}
               >
                 Start
               </Button>
               <Button
                 size="sm"
-                onClick={handleStop}
+                onClick={onStop}
                 disabled={motorState !== "Running"}
                 variant="destructive"
               >
@@ -170,12 +119,12 @@ export function SectionCards() {
                 <Button
                   variant="outline"
                   size="icon-sm"
-                  onClick={handleDecrement}
-                  onMouseDown={handleDecrementMouseDown}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                  onTouchStart={handleDecrementMouseDown}
-                  onTouchEnd={handleMouseUp}
+                  onClick={onDecrement}
+                  onMouseDown={onDecrementMouseDown}
+                  onMouseUp={onMouseUp}
+                  onMouseLeave={onMouseUp}
+                  onTouchStart={onDecrementMouseDown}
+                  onTouchEnd={onMouseUp}
                   disabled={parseFloat(frequency) <= 0}
                 >
                   <IconMinus />
@@ -210,12 +159,12 @@ export function SectionCards() {
                 <Button
                   variant="outline"
                   size="icon-sm"
-                  onClick={handleIncrement}
-                  onMouseDown={handleIncrementMouseDown}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                  onTouchStart={handleIncrementMouseDown}
-                  onTouchEnd={handleMouseUp}
+                  onClick={onIncrement}
+                  onMouseDown={onIncrementMouseDown}
+                  onMouseUp={onMouseUp}
+                  onMouseLeave={onMouseUp}
+                  onTouchStart={onIncrementMouseDown}
+                  onTouchEnd={onMouseUp}
                   disabled={parseFloat(frequency) >= 60}
                 >
                   <IconPlus />
