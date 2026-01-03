@@ -116,7 +116,7 @@ export function SectionCards() {
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Motor State</CardDescription>
+          <CardTitle>Motor State</CardTitle>
           <Status variant={getStatusVariant(motorState)}>
             {motorState === "Running" && <StatusIndicator />}
             <StatusLabel>{motorState}</StatusLabel>
@@ -138,15 +138,20 @@ export function SectionCards() {
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Motor Control</CardDescription>
+          <CardTitle>Motor Control</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
             <div className="flex gap-2">
-              <Button onClick={handleStart} disabled={motorState === "Running"}>
+              <Button
+                size="sm"
+                onClick={handleStart}
+                disabled={motorState === "Running"}
+              >
                 Start
               </Button>
               <Button
+                size="sm"
                 onClick={handleStop}
                 disabled={motorState !== "Running"}
                 variant="destructive"
@@ -200,7 +205,7 @@ export function SectionCards() {
                       }
                     }
                   }}
-                  className="text-center flex-grow"
+                  className="text-center flex-grow h-8"
                 />
                 <Button
                   variant="outline"
@@ -222,43 +227,19 @@ export function SectionCards() {
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
+            Active Accounts
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
-            </Badge>
-          </CardAction>
+          <CardDescription>45,678</CardDescription>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <IconTrendingUp className="size-4" />
-          </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
-        </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
+            Growth Rate
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +4.5%
-            </Badge>
-          </CardAction>
+          <CardDescription>4.5%</CardDescription>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase <IconTrendingUp className="size-4" />
-          </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
-        </CardFooter>
       </Card>
     </div>
   );
