@@ -1,6 +1,8 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+"use client";
+import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -8,19 +10,48 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
+import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status";
+
+type MotorState = "Running" | "Stopped" | "Error";
 
 export function SectionCards() {
+  const [motorState, setMotorState] = useState<MotorState>("Running");
+
+  useEffect(() => {
+    const states: MotorState[] = ["Running", "Stopped", "Error"];
+    let currentStateIndex = 0;
+    const interval = setInterval(() => {
+      currentStateIndex = (currentStateIndex + 1) % states.length;
+      setMotorState(states[currentStateIndex]);
+    }, 3000); // Change state every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getStatusVariant = (state: MotorState) => {
+    switch (state) {
+      case "Running":
+        return "success";
+      case "Stopped":
+        return "default";
+      case "Error":
+        return "error";
+      default:
+        return "default";
+    }
+  };
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
-          </CardTitle>
+          <CardDescription>Motor State</CardDescription>
+          <Status variant={getStatusVariant(motorState)}>
+            {motorState === "Running" && <StatusIndicator />}
+            <StatusLabel>{motorState}</StatusLabel>
+          </Status>
           <CardAction>
-            <Badge variant="outline">
+            <Badge variant="secondary">
               <IconTrendingUp />
               +12.5%
             </Badge>
@@ -98,5 +129,5 @@ export function SectionCards() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
