@@ -78,12 +78,12 @@ export function SectionCards() {
 
   const handleIncrementMouseDown = () => {
     handleIncrement();
-    intervalRef.current = setInterval(handleIncrement, 150);
+    intervalRef.current = setInterval(handleIncrement, 85);
   };
 
   const handleDecrementMouseDown = () => {
     handleDecrement();
-    intervalRef.current = setInterval(handleDecrement, 150);
+    intervalRef.current = setInterval(handleDecrement, 85);
   };
 
   const handleMouseUp = () => {
