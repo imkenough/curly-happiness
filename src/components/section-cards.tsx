@@ -31,6 +31,7 @@ export function SectionCards() {
   const [uptimeMinutes, setUptimeMinutes] = useState(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
@@ -77,16 +78,22 @@ export function SectionCards() {
   };
 
   const handleIncrementMouseDown = () => {
-    handleIncrement();
-    intervalRef.current = setInterval(handleIncrement, 85);
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(handleIncrement, 75);
+    }, 300);
   };
 
   const handleDecrementMouseDown = () => {
-    handleDecrement();
-    intervalRef.current = setInterval(handleDecrement, 85);
+    timeoutRef.current = setTimeout(() => {
+      intervalRef.current = setInterval(handleDecrement, 75);
+    }, 300);
   };
 
   const handleMouseUp = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -142,7 +149,7 @@ export function SectionCards() {
               <Button
                 onClick={handleStop}
                 disabled={motorState !== "Running"}
-                variant="secondary"
+                variant="destructive"
               >
                 Stop
               </Button>
@@ -158,6 +165,7 @@ export function SectionCards() {
                 <Button
                   variant="outline"
                   size="icon-sm"
+                  onClick={handleDecrement}
                   onMouseDown={handleDecrementMouseDown}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
@@ -197,6 +205,7 @@ export function SectionCards() {
                 <Button
                   variant="outline"
                   size="icon-sm"
+                  onClick={handleIncrement}
                   onMouseDown={handleIncrementMouseDown}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
