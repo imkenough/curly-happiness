@@ -5,7 +5,7 @@ import {
   IconTrendingDown,
   IconTrendingUp,
 } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,8 @@ export function SectionCards() {
   const [frequency, setFrequency] = useState("30.55");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [uptimeMinutes, setUptimeMinutes] = useState(0);
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
@@ -55,21 +57,40 @@ export function SectionCards() {
   };
 
   const handleIncrement = () => {
-    let currentFreq = parseFloat(frequency);
-    if (isNaN(currentFreq)) currentFreq = 0;
-
-    let newFreq = currentFreq + 0.01;
-    if (newFreq > 60) newFreq = 60;
-    setFrequency(newFreq.toFixed(2));
+    setFrequency((prev) => {
+      let currentFreq = parseFloat(prev);
+      if (isNaN(currentFreq)) currentFreq = 0;
+      let newFreq = currentFreq + 0.01;
+      if (newFreq > 60) newFreq = 60;
+      return newFreq.toFixed(2);
+    });
   };
 
   const handleDecrement = () => {
-    let currentFreq = parseFloat(frequency);
-    if (isNaN(currentFreq)) currentFreq = 0;
+    setFrequency((prev) => {
+      let currentFreq = parseFloat(prev);
+      if (isNaN(currentFreq)) currentFreq = 0;
+      let newFreq = currentFreq - 0.01;
+      if (newFreq < 0) newFreq = 0;
+      return newFreq.toFixed(2);
+    });
+  };
 
-    let newFreq = currentFreq - 0.01;
-    if (newFreq < 0) newFreq = 0;
-    setFrequency(newFreq.toFixed(2));
+  const handleIncrementMouseDown = () => {
+    handleIncrement();
+    intervalRef.current = setInterval(handleIncrement, 150);
+  };
+
+  const handleDecrementMouseDown = () => {
+    handleDecrement();
+    intervalRef.current = setInterval(handleDecrement, 150);
+  };
+
+  const handleMouseUp = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
   };
 
   const getStatusVariant = (state: MotorState) => {
@@ -137,7 +158,11 @@ export function SectionCards() {
                 <Button
                   variant="outline"
                   size="icon-sm"
-                  onClick={handleDecrement}
+                  onMouseDown={handleDecrementMouseDown}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  onTouchStart={handleDecrementMouseDown}
+                  onTouchEnd={handleMouseUp}
                   disabled={parseFloat(frequency) <= 0}
                 >
                   <IconMinus />
@@ -152,21 +177,19 @@ export function SectionCards() {
                   value={frequency}
                   onChange={(e) => {
                     const value = e.target.value;
-                    // Allow empty string or string ending with a dot for partial input (e.g., "12." or "12.3")
                     if (value === "" || value.match(/^\d+(\.\d{0,2})?$/)) {
-                        const numValue = parseFloat(value);
-                        if (!isNaN(numValue)) {
-                            if (numValue >= 0 && numValue <= 60) {
-                                setFrequency(value);
-                            } else if (numValue < 0) {
-                                setFrequency("0.00"); // Clamp to 0
-                            } else if (numValue > 60) {
-                                setFrequency("60.00"); // Clamp to 60
-                            }
-                        } else {
-                            // If it's an empty string or just a dot, it's fine for partial input
-                            setFrequency(value);
+                      const numValue = parseFloat(value);
+                      if (!isNaN(numValue)) {
+                        if (numValue >= 0 && numValue <= 60) {
+                          setFrequency(value);
+                        } else if (numValue < 0) {
+                          setFrequency("0.00");
+                        } else if (numValue > 60) {
+                          setFrequency("60.00");
                         }
+                      } else {
+                        setFrequency(value);
+                      }
                     }
                   }}
                   className="text-center flex-grow"
@@ -174,7 +197,11 @@ export function SectionCards() {
                 <Button
                   variant="outline"
                   size="icon-sm"
-                  onClick={handleIncrement}
+                  onMouseDown={handleIncrementMouseDown}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  onTouchStart={handleIncrementMouseDown}
+                  onTouchEnd={handleMouseUp}
                   disabled={parseFloat(frequency) >= 60}
                 >
                   <IconPlus />
