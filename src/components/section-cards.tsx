@@ -1,33 +1,76 @@
 "use client";
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
+import {
+  IconMinus,
+  IconPlus,
+  IconTrendingDown,
+  IconTrendingUp,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
+  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status";
 
 type MotorState = "Running" | "Stopped" | "Error";
 
 export function SectionCards() {
-  const [motorState, setMotorState] = useState<MotorState>("Running");
+  const [motorState, setMotorState] = useState<MotorState>("Stopped");
+  const [frequency, setFrequency] = useState("30.55");
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [uptimeMinutes, setUptimeMinutes] = useState(0);
 
   useEffect(() => {
-    const states: MotorState[] = ["Running", "Stopped", "Error"];
-    let currentStateIndex = 0;
-    const interval = setInterval(() => {
-      currentStateIndex = (currentStateIndex + 1) % states.length;
-      setMotorState(states[currentStateIndex]);
-    }, 3000); // Change state every 3 seconds
+    let intervalId: NodeJS.Timeout | undefined;
+    if (motorState === "Running") {
+      intervalId = setInterval(() => {
+        if (startTime) {
+          const diff = new Date().getTime() - startTime.getTime();
+          setUptimeMinutes(Math.floor(diff / (1000 * 60)));
+        }
+      }, 1000);
+    }
+    return () => clearInterval(intervalId);
+  }, [motorState, startTime]);
 
-    return () => clearInterval(interval);
-  }, []);
+  const handleStart = () => {
+    setMotorState("Running");
+    setStartTime(new Date());
+  };
+
+  const handleStop = () => {
+    setMotorState("Stopped");
+    setStartTime(null);
+    setUptimeMinutes(0);
+  };
+
+  const handleIncrement = () => {
+    let currentFreq = parseFloat(frequency);
+    if (isNaN(currentFreq)) currentFreq = 0;
+
+    let newFreq = currentFreq + 0.01;
+    if (newFreq > 60) newFreq = 60;
+    setFrequency(newFreq.toFixed(2));
+  };
+
+  const handleDecrement = () => {
+    let currentFreq = parseFloat(frequency);
+    if (isNaN(currentFreq)) currentFreq = 0;
+
+    let newFreq = currentFreq - 0.01;
+    if (newFreq < 0) newFreq = 0;
+    setFrequency(newFreq.toFixed(2));
+  };
 
   const getStatusVariant = (state: MotorState) => {
     switch (state) {
@@ -50,43 +93,96 @@ export function SectionCards() {
             {motorState === "Running" && <StatusIndicator />}
             <StatusLabel>{motorState}</StatusLabel>
           </Status>
-          <CardAction>
-            <Badge variant="secondary">
-              <IconTrendingUp />
-              +12.5%
-            </Badge>
-          </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <IconTrendingUp className="size-4" />
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {motorState === "Running" ? `${frequency} Hz` : "0.00 Hz"}
           </div>
-          <div className="text-muted-foreground">
-            Visitors for the last 6 months
-          </div>
-        </CardFooter>
+          <p className="text-xs text-muted-foreground">
+            {motorState === "Running" && startTime
+              ? `Running since ${startTime.toLocaleTimeString([], {
+                  hour: "numeric",
+                  minute: "numeric",
+                })} (${uptimeMinutes} minutes)`
+              : "Motor is stopped"}
+          </p>
+        </CardContent>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown />
-              -20%
-            </Badge>
-          </CardAction>
+          <CardDescription>Motor Control</CardDescription>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period <IconTrendingDown className="size-4" />
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-2">
+              <Button onClick={handleStart} disabled={motorState === "Running"}>
+                Start
+              </Button>
+              <Button
+                onClick={handleStop}
+                disabled={motorState !== "Running"}
+                variant="secondary"
+              >
+                Stop
+              </Button>
+            </div>
+            <div>
+              <Label
+                htmlFor="frequency"
+                className="text-xs text-muted-foreground"
+              >
+                Frequency (Hz)
+              </Label>
+              <div className="flex items-center gap-1 w-full">
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  onClick={handleDecrement}
+                  disabled={parseFloat(frequency) <= 0}
+                >
+                  <IconMinus />
+                </Button>
+                <Input
+                  id="frequency"
+                  type="number"
+                  placeholder="XX.XX"
+                  min="0"
+                  max="60"
+                  step="0.01"
+                  value={frequency}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow empty string or string ending with a dot for partial input (e.g., "12." or "12.3")
+                    if (value === "" || value.match(/^\d+(\.\d{0,2})?$/)) {
+                        const numValue = parseFloat(value);
+                        if (!isNaN(numValue)) {
+                            if (numValue >= 0 && numValue <= 60) {
+                                setFrequency(value);
+                            } else if (numValue < 0) {
+                                setFrequency("0.00"); // Clamp to 0
+                            } else if (numValue > 60) {
+                                setFrequency("60.00"); // Clamp to 60
+                            }
+                        } else {
+                            // If it's an empty string or just a dot, it's fine for partial input
+                            setFrequency(value);
+                        }
+                    }
+                  }}
+                  className="text-center flex-grow"
+                />
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  onClick={handleIncrement}
+                  disabled={parseFloat(frequency) >= 60}
+                >
+                  <IconPlus />
+                </Button>
+              </div>
+            </div>
           </div>
-          <div className="text-muted-foreground">
-            Acquisition needs attention
-          </div>
-        </CardFooter>
+        </CardContent>
       </Card>
       <Card className="@container/card">
         <CardHeader>
