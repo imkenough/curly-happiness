@@ -208,7 +208,7 @@ export function SectionCards({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-2">
+          <div className="flex flex-wrap gap-4">
             <div>
               <div className="text-sm font-medium text-muted-foreground">
                 Output Voltage
