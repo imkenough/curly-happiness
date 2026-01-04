@@ -1,5 +1,6 @@
 "use client";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
+import CountUp from "@/components/CountUp"; // Added import
 import {
   Card,
   CardContent,
@@ -65,7 +66,6 @@ export function SectionCards({
       <Card className="@container/card">
         <CardHeader>
           <CardTitle>Motor State</CardTitle>
-          <CardDescription>Current Motor Status</CardDescription>
           <Status variant={getStatusVariant(motorState)}>
             {motorState === "Running" && <StatusIndicator />}
             <StatusLabel>{motorState}</StatusLabel>
@@ -88,9 +88,6 @@ export function SectionCards({
       <Card className="@container/card">
         <CardHeader>
           <CardTitle>Motor Control</CardTitle>
-          <CardDescription>
-            Start/Stop the motor and Set Frequency
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
@@ -184,7 +181,13 @@ export function SectionCards({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {rpm}{" "}
+            <CountUp
+              from={0}
+              to={parseFloat(rpm) || 0}
+              duration={1}
+              className="inline"
+            />
+            {" "}
             <span className="text-sm font-normal text-muted-foreground">
               RPM
             </span>

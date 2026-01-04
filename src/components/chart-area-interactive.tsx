@@ -1,6 +1,3 @@
-"use client";
-
-import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -114,8 +111,11 @@ export function ChartAreaInteractive({
               cursor={false}
               content={
                 <ChartTooltipContent
-                  formatter={(value: number, name: string, item: { payload: { time: number } }) => {
+                  formatter={(value: any, _name: any, item: any) => {
                     if (typeof value !== "number" || !isFinite(value)) {
+                      return "";
+                    }
+                    if (!item || !item.payload || typeof item.payload.time !== "number") {
                       return "";
                     }
                     const time = item.payload.time;
