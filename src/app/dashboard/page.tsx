@@ -17,6 +17,10 @@ export default function Page() {
   const [uptimeMinutes, setUptimeMinutes] = useState(0);
   const [runSessions, setRunSessions] = useState<RunSession[]>([]);
   const [chartData, setChartData] = useState<{ time: number; frequency: number }[]>([]);
+  // New state variables for electrical and control
+  const [outputVoltage, setOutputVoltage] = useState("230");
+  const [outputCurrent, setOutputCurrent] = useState("10");
+  const [dcBusVoltage, setDcBusVoltage] = useState("540");
   // const [timeRange, setTimeRange] = useState("24h"); // Commented out
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -197,6 +201,9 @@ export default function Page() {
                     frequency={inputFrequency}
                     displayFrequency={frequency}
                     rpm={rpm.toFixed(0)}
+                    outputVoltage={outputVoltage}
+                    outputCurrent={outputCurrent}
+                    dcBusVoltage={dcBusVoltage}
                     setFrequency={setInputFrequency}
                     startTime={startTime}
                     uptimeMinutes={uptimeMinutes}

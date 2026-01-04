@@ -20,6 +20,9 @@ interface SectionCardsProps {
   frequency: string;
   displayFrequency: string;
   rpm: string;
+  outputVoltage: string;
+  outputCurrent: string;
+  dcBusVoltage: string;
   setFrequency: (value: string) => void;
   startTime: Date | null;
   uptimeMinutes: number;
@@ -37,6 +40,9 @@ export function SectionCards({
   frequency,
   displayFrequency,
   rpm,
+  outputVoltage,
+  outputCurrent,
+  dcBusVoltage,
   setFrequency,
   startTime,
   uptimeMinutes,
@@ -196,11 +202,57 @@ export function SectionCards({
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            Growth Rate
-          </CardTitle>
-          <CardDescription>4.5%</CardDescription>
+          <CardTitle>Electrical and Control</CardTitle>
+          <CardDescription>
+            Monitoring key electrical parameters.
+          </CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="grid gap-2">
+            <div>
+              <div className="text-sm font-medium text-muted-foreground">
+                Output Voltage
+              </div>
+              <div className="text-2xl font-bold">
+                <CountUp
+                  from={0}
+                  to={parseFloat(outputVoltage) || 0}
+                  duration={1}
+                  className="inline"
+                />{" "}
+                <span className="text-sm font-normal text-muted-foreground">V</span>
+              </div>
+            </div>
+            <div>
+              <div className="text-sm font-medium text-muted-foreground">
+                Output Current
+              </div>
+              <div className="text-2xl font-bold">
+                <CountUp
+                  from={0}
+                  to={parseFloat(outputCurrent) || 0}
+                  duration={1}
+                  className="inline"
+                />{" "}
+                <span className="text-sm font-normal text-muted-foreground">A</span>
+              </div>
+            </div>
+            <div>
+              <div className="text-sm font-medium text-muted-foreground">
+                DC Bus Voltage
+              </div>
+              <div className="text-2xl font-bold">
+                <CountUp
+                  from={0}
+                  to={parseFloat(dcBusVoltage) || 0}
+                  duration={1}
+                  className="inline"
+                />{" "}
+                <span className="text-sm font-normal text-muted-foreground">V</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
