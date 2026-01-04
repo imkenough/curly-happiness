@@ -7,13 +7,11 @@ import {
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
   IconHelp,
   IconListDetails,
   IconReport,
   IconSearch,
   IconSettings,
-  IconUsers,
 } from "@tabler/icons-react";
 import { Activity } from "lucide-react";
 
@@ -40,7 +38,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      url: "#",
       icon: IconDashboard,
     },
     {
