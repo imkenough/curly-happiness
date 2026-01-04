@@ -22,6 +22,7 @@ type MotorState = "Running" | "Stopped" | "Error";
 interface SectionCardsProps {
   motorState: MotorState;
   frequency: string;
+  displayFrequency: string;
   setFrequency: (value: string) => void;
   startTime: Date | null;
   uptimeMinutes: number;
@@ -37,6 +38,7 @@ interface SectionCardsProps {
 export function SectionCards({
   motorState,
   frequency,
+  displayFrequency,
   setFrequency,
   startTime,
   uptimeMinutes,
@@ -73,7 +75,7 @@ export function SectionCards({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {motorState === "Running" ? `${frequency} Hz` : "0.00 Hz"}
+            {motorState === "Running" ? `${displayFrequency} Hz` : "0.00 Hz"}
           </div>
           <p className="text-xs text-muted-foreground">
             {motorState === "Running" && startTime

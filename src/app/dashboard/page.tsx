@@ -11,6 +11,7 @@ type RunSession = { start: Date; end: Date; frequency: string };
 
 export default function Page() {
   const [motorState, setMotorState] = useState<MotorState>("Stopped");
+  const [inputFrequency, setInputFrequency] = useState("30.55");
   const [frequency, setFrequency] = useState("30.55");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [uptimeMinutes, setUptimeMinutes] = useState(0);
@@ -20,6 +21,24 @@ export default function Page() {
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      if (inputFrequency !== "") {
+        setFrequency(inputFrequency);
+      }
+    }, 3000);
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [inputFrequency]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
@@ -155,8 +174,9 @@ export default function Page() {
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <SectionCards
                 motorState={motorState}
-                frequency={frequency}
-                setFrequency={setFrequency}
+                frequency={inputFrequency}
+                displayFrequency={frequency}
+                setFrequency={setInputFrequency}
                 startTime={startTime}
                 uptimeMinutes={uptimeMinutes}
                 onStart={handleStart}
