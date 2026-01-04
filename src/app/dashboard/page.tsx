@@ -22,6 +22,23 @@ export default function Page() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevFrequencyRef = useRef(frequency);
+
+  useEffect(() => {
+    if (
+      motorState === "Running" &&
+      startTime &&
+      frequency !== prevFrequencyRef.current
+    ) {
+      const now = new Date();
+      setRunSessions((prev) => [
+        ...prev,
+        { start: startTime, end: now, frequency: prevFrequencyRef.current },
+      ]);
+      setStartTime(now);
+    }
+    prevFrequencyRef.current = frequency;
+  }, [frequency, motorState, startTime]);
 
   useEffect(() => {
     if (debounceTimeoutRef.current) {
@@ -115,7 +132,7 @@ export default function Page() {
   };
 
   const handleIncrement = () => {
-    setFrequency((prev) => {
+    setInputFrequency((prev) => {
       let currentFreq = parseFloat(prev);
       if (isNaN(currentFreq)) currentFreq = 0;
       let newFreq = currentFreq + 0.01;
@@ -125,7 +142,7 @@ export default function Page() {
   };
 
   const handleDecrement = () => {
-    setFrequency((prev) => {
+    setInputFrequency((prev) => {
       let currentFreq = parseFloat(prev);
       if (isNaN(currentFreq)) currentFreq = 0;
       let newFreq = currentFreq - 0.01;
