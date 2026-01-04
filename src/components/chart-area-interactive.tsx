@@ -28,7 +28,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 interface ChartAreaInteractiveProps {
-  data: any[];
+  data: { time: number; frequency: number }[];
 }
 
 export function ChartAreaInteractive({
@@ -43,7 +43,7 @@ export function ChartAreaInteractive({
     const endTime = new Date(now.getTime() + (windowMinutes / 2) * 60 * 1000);
 
     const ticks = [];
-    let currentTick = new Date(startTime);
+    const currentTick = new Date(startTime);
     currentTick.setMinutes(
       Math.floor(currentTick.getMinutes() / intervalMinutes) * intervalMinutes,
       0,
@@ -114,7 +114,7 @@ export function ChartAreaInteractive({
               cursor={false}
               content={
                 <ChartTooltipContent
-                  formatter={(value: number, name: string, item: any) => {
+                  formatter={(value: number, name: string, item: { payload: { time: number } }) => {
                     if (typeof value !== "number" || !isFinite(value)) {
                       return "";
                     }

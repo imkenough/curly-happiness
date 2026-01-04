@@ -1,10 +1,5 @@
 "use client";
-import {
-  IconMinus,
-  IconPlus,
-  IconTrendingDown,
-  IconTrendingUp,
-} from "@tabler/icons-react";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 import {
   Card,
   CardContent,
@@ -23,6 +18,7 @@ interface SectionCardsProps {
   motorState: MotorState;
   frequency: string;
   displayFrequency: string;
+  rpm: string;
   setFrequency: (value: string) => void;
   startTime: Date | null;
   uptimeMinutes: number;
@@ -39,6 +35,7 @@ export function SectionCards({
   motorState,
   frequency,
   displayFrequency,
+  rpm,
   setFrequency,
   startTime,
   uptimeMinutes,
@@ -68,6 +65,7 @@ export function SectionCards({
       <Card className="@container/card">
         <CardHeader>
           <CardTitle>Motor State</CardTitle>
+          <CardDescription>Current Motor Status</CardDescription>
           <Status variant={getStatusVariant(motorState)}>
             {motorState === "Running" && <StatusIndicator />}
             <StatusLabel>{motorState}</StatusLabel>
@@ -90,6 +88,9 @@ export function SectionCards({
       <Card className="@container/card">
         <CardHeader>
           <CardTitle>Motor Control</CardTitle>
+          <CardDescription>
+            Start/Stop the motor and Set Frequency
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
@@ -178,11 +179,17 @@ export function SectionCards({
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            Active Accounts
-          </CardTitle>
-          <CardDescription>45,678</CardDescription>
+          <CardTitle>Motor RPM</CardTitle>
+          <CardDescription>Revolutions Per Minute</CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            {rpm}{" "}
+            <span className="text-sm font-normal text-muted-foreground">
+              RPM
+            </span>
+          </div>
+        </CardContent>
       </Card>
       <Card className="@container/card">
         <CardHeader>

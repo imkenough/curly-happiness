@@ -16,7 +16,7 @@ export default function Page() {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [uptimeMinutes, setUptimeMinutes] = useState(0);
   const [runSessions, setRunSessions] = useState<RunSession[]>([]);
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{ time: number; frequency: number }[]>([]);
   // const [timeRange, setTimeRange] = useState("24h"); // Commented out
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -189,21 +189,27 @@ export default function Page() {
         <div className="flex flex-1 flex-col">
           <div className="flex flex-1 flex-col gap-2 @container/main">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards
-                motorState={motorState}
-                frequency={inputFrequency}
-                displayFrequency={frequency}
-                setFrequency={setInputFrequency}
-                startTime={startTime}
-                uptimeMinutes={uptimeMinutes}
-                onStart={handleStart}
-                onStop={handleStop}
-                onIncrement={handleIncrement}
-                onDecrement={handleDecrement}
-                onIncrementMouseDown={handleIncrementMouseDown}
-                onDecrementMouseDown={handleDecrementMouseDown}
-                onMouseUp={handleMouseUp}
-              />
+              {(() => {
+                const rpm = motorState === "Running" ? (parseFloat(frequency) * 120) / 4 : 0;
+                return (
+                  <SectionCards
+                    motorState={motorState}
+                    frequency={inputFrequency}
+                    displayFrequency={frequency}
+                    rpm={rpm.toFixed(0)}
+                    setFrequency={setInputFrequency}
+                    startTime={startTime}
+                    uptimeMinutes={uptimeMinutes}
+                    onStart={handleStart}
+                    onStop={handleStop}
+                    onIncrement={handleIncrement}
+                    onDecrement={handleDecrement}
+                    onIncrementMouseDown={handleIncrementMouseDown}
+                    onDecrementMouseDown={handleDecrementMouseDown}
+                    onMouseUp={handleMouseUp}
+                  />
+                );
+              })()}
               <div className="px-4 lg:px-6">
                 <ChartAreaInteractive
                   data={chartData}
