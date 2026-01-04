@@ -133,7 +133,7 @@ export function ChartAreaInteractive({
             />
             <Area
               dataKey="frequency"
-              type="natural"
+              type="linear"
               fill="url(#fillFrequency)"
               stroke="var(--color-frequency)"
               stackId="a"
