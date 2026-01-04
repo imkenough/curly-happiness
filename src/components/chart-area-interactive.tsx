@@ -3,7 +3,6 @@
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Card,
   CardContent,
@@ -18,7 +17,8 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 
-export const description = "An interactive area chart showing motor frequency over time.";
+export const description =
+  "An interactive area chart showing motor frequency over time.";
 
 const chartConfig = {
   frequency: {
@@ -34,28 +34,31 @@ interface ChartAreaInteractiveProps {
 export function ChartAreaInteractive({
   data,
 }: ChartAreaInteractiveProps) {
-  const isMobile = useIsMobile();
+  const getTicks = () => {
+    const now = new Date();
+    const windowMinutes = 60;
+    const intervalMinutes = 5;
 
-  const getTicks = (data: any[]) => {
-    if (!data || data.length === 0) {
-      return [];
-    }
-    const timeValues = data.map(d => d.time);
-    const minTime = Math.min(...timeValues);
-    const maxTime = Math.max(...timeValues);
+    const startTime = new Date(now.getTime() - (windowMinutes / 2) * 60 * 1000);
+    const endTime = new Date(now.getTime() + (windowMinutes / 2) * 60 * 1000);
 
     const ticks = [];
-    let currentTick = new Date(minTime);
-    currentTick.setMinutes(Math.ceil(currentTick.getMinutes() / 5) * 5, 0, 0);
+    let currentTick = new Date(startTime);
+    currentTick.setMinutes(
+      Math.floor(currentTick.getMinutes() / intervalMinutes) * intervalMinutes,
+      0,
+      0
+    );
 
-    while (currentTick.getTime() <= maxTime) {
+    while (currentTick.getTime() <= endTime.getTime()) {
       ticks.push(currentTick.getTime());
-      currentTick.setMinutes(currentTick.getMinutes() + 5);
+      currentTick.setMinutes(currentTick.getMinutes() + intervalMinutes);
     }
-    return ticks;
+
+    return { ticks, domain: [startTime.getTime(), endTime.getTime()] };
   };
 
-  const customTicks = getTicks(data);
+  const { ticks: customTicks, domain: customDomain } = getTicks();
 
   return (
     <Card>
@@ -89,18 +92,21 @@ export function ChartAreaInteractive({
             <XAxis
               dataKey="time"
               type="number"
-              domain={['dataMin', 'dataMax']}
+              domain={customDomain}
               ticks={customTicks}
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              interval={0}
+              interval="preserveStartEnd"
               tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleTimeString([], {
+                if (typeof value !== "number" || !isFinite(value)) {
+                  return "";
+                }
+                return new Intl.DateTimeFormat("en-US", {
                   hour: "numeric",
-                  minute: "2-digit",
-                });
+                  minute: "numeric",
+                  hour12: true,
+                }).format(new Date(value));
               }}
             />
             <YAxis dataKey="frequency" domain={[0, 60]} />
@@ -108,14 +114,19 @@ export function ChartAreaInteractive({
               cursor={false}
               content={
                 <ChartTooltipContent
-                  labelFormatter={(value) =>
-                    new Date(value).toLocaleString("en-US", {
-                      month: "short",
-                      day: "numeric",
+                  formatter={(value: number, name: string, item: any) => {
+                    if (typeof value !== "number" || !isFinite(value)) {
+                      return "";
+                    }
+                    const time = item.payload.time;
+                    const formattedTime = new Intl.DateTimeFormat("en-US", {
                       hour: "numeric",
-                      minute: "2-digit",
-                    })
-                  }
+                      minute: "numeric",
+                      second: "2-digit",
+                      hour12: true,
+                    }).format(new Date(time));
+                    return `${formattedTime}: ${value.toFixed(2)} Hz`;
+                  }}
                   indicator="dot"
                 />
               }

@@ -1,0 +1,48 @@
+react-dom_client.js?v=a21237d9:20103 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+chart-area-interactive.tsx:117 Uncaught RangeError: Invalid time value
+    at labelFormatter (chart-area-interactive.tsx:117:24)
+    at chart.tsx:145:12
+    at updateMemo (react-dom_client.js?v=a21237d9:6545:21)
+    at Object.useMemo (react-dom_client.js?v=a21237d9:18969:20)
+    at exports.useMemo (chunk-WUR7D6NS.js?v=a21237d9:947:36)
+    at ChartTooltipContent (chart.tsx:129:30)
+    at Object.react_stack_bottom_frame (react-dom_client.js?v=a21237d9:18509:20)
+    at renderWithHooks (react-dom_client.js?v=a21237d9:5654:24)
+    at updateFunctionComponent (react-dom_client.js?v=a21237d9:7475:21)
+    at beginWork (react-dom_client.js?v=a21237d9:8525:20)
+labelFormatter @ chart-area-interactive.tsx:117
+(anonymous) @ chart.tsx:145
+updateMemo @ react-dom_client.js?v=a21237d9:6545
+useMemo @ react-dom_client.js?v=a21237d9:18969
+exports.useMemo @ chunk-WUR7D6NS.js?v=a21237d9:947
+ChartTooltipContent @ chart.tsx:129
+react_stack_bottom_frame @ react-dom_client.js?v=a21237d9:18509
+renderWithHooks @ react-dom_client.js?v=a21237d9:5654
+updateFunctionComponent @ react-dom_client.js?v=a21237d9:7475
+beginWork @ react-dom_client.js?v=a21237d9:8525
+runWithFiberInDEV @ react-dom_client.js?v=a21237d9:997
+performUnitOfWork @ react-dom_client.js?v=a21237d9:12561
+workLoopSync @ react-dom_client.js?v=a21237d9:12424
+renderRootSync @ react-dom_client.js?v=a21237d9:12408
+performWorkOnRoot @ react-dom_client.js?v=a21237d9:11827
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=a21237d9:13505
+performWorkUntilDeadline @ react-dom_client.js?v=a21237d9:36
+react-dom_client.js?v=a21237d9:6966 An error occurred in the <ChartTooltipContent> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+
+defaultOnUncaughtError @ react-dom_client.js?v=a21237d9:6966
+logUncaughtError @ react-dom_client.js?v=a21237d9:7020
+runWithFiberInDEV @ react-dom_client.js?v=a21237d9:997
+lane.callback @ react-dom_client.js?v=a21237d9:7048
+callCallback @ react-dom_client.js?v=a21237d9:5491
+commitCallbacks @ react-dom_client.js?v=a21237d9:5503
+runWithFiberInDEV @ react-dom_client.js?v=a21237d9:999
+commitLayoutEffectOnFiber @ react-dom_client.js?v=a21237d9:9976
+flushLayoutEffects @ react-dom_client.js?v=a21237d9:12924
+commitRoot @ react-dom_client.js?v=a21237d9:12803
+commitRootWhenReady @ react-dom_client.js?v=a21237d9:12016
+performWorkOnRoot @ react-dom_client.js?v=a21237d9:11950
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=a21237d9:13505
+performWorkUntilDeadline @ react-dom_client.js?v=a21237d9:36

@@ -35,12 +35,51 @@ export default function Page() {
   }, [motorState, startTime]);
 
   useEffect(() => {
-    const chartPoints = runSessions.map(session => ({
-      time: session.start.getTime(),
-      frequency: parseFloat(session.frequency),
-    }));
-    setChartData(chartPoints);
-  }, [runSessions]);
+    const points: { time: number; frequency: number }[] = [];
+    const allSessions = [...runSessions];
+
+    if (motorState === "Running" && startTime) {
+      allSessions.push({
+        start: startTime,
+        end: new Date(),
+        frequency: frequency,
+      });
+    }
+
+    const sortedSessions = allSessions.sort(
+      (a, b) => a.start.getTime() - b.start.getTime()
+    );
+
+    let lastTime =
+      sortedSessions.length > 0 ? sortedSessions[0].start.getTime() - 1 : null;
+
+    if (lastTime) {
+      points.push({ time: lastTime, frequency: 0 });
+    }
+
+    sortedSessions.forEach((session) => {
+      const sessionFreq = parseFloat(session.frequency);
+      if (isNaN(sessionFreq)) return;
+
+      if (lastTime && session.start.getTime() > lastTime) {
+        points.push({ time: session.start.getTime() - 1, frequency: 0 });
+      }
+
+      points.push({ time: session.start.getTime(), frequency: sessionFreq });
+      points.push({ time: session.end.getTime(), frequency: sessionFreq });
+      lastTime = session.end.getTime();
+    });
+
+    if (
+      lastTime &&
+      (motorState === "Stopped" || motorState === "Error") &&
+      new Date().getTime() > lastTime
+    ) {
+      points.push({ time: lastTime + 1, frequency: 0 });
+    }
+
+    setChartData(points);
+  }, [runSessions, motorState, startTime, frequency]);
 
   const handleStart = () => {
     setMotorState("Running");
